@@ -42,4 +42,8 @@ public class CameraController : MonoBehaviour
         camTransform.position = lookAt.position + rotation * dir;
         camTransform.LookAt(lookAt.position);
     }
+
+    public float getCameraX() {
+        return currentX;
+    }
 }

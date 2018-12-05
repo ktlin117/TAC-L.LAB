@@ -1,36 +1,45 @@
 ﻿using UnityEngine;
-
-// Include the namespace required to use Unity UI
 using UnityEngine.UI;
-
 using System.Collections;
 
 public class PlayerController : MonoBehaviour {
 
-    // Create public variables for player speed, and for the Text UI game objects
     public float speed;
-
-    // Create private references to the rigidbody component on the player, and the count of pick up objects picked up so far
+    public float jumpSpeed;
     private Rigidbody rb;
+    bool grounded;
 
-    // At the start of the game..
+    public GameObject cam;
+    private CameraController camControl;
+
+    public GameObject manager;
+    private GameController gameManager; 
+
     void Start() {
-        // Assign the Rigidbody component to our private rb variable
         rb = GetComponent<Rigidbody>();
-
+        camControl = cam.GetComponent<CameraController>();
+        gameManager = manager.GetComponent<GameController>();
     }
 
-    // Each physics step..
     void FixedUpdate() {
-        // Set some local float variables equal to the value of our Horizontal and Vertical Inputs
+        if (transform.position.y < -10) {
+            gameManager.EndGame();
+        }
+        Inputs();
+
         float moveHorizontal = Input.GetAxis("Horizontal");
         float moveVertical = Input.GetAxis("Vertical");
 
-        // Create a Vector3 variable, and assign X and Z to feature our horizontal and vertical float variables above
-        Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
+        Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical) * 2;
+        Vector3 relativeMovement = Camera.main.transform.TransformVector(movement);
 
-        // Add a physical force to our Player rigidbody using our 'movement' Vector3 above, 
-        // multiplying it by 'speed' - our public player speed that appears in the inspector
-        rb.AddForce(movement * speed);
+        rb.AddForce(relativeMovement * speed);
+    }
+
+    void Inputs() {
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            Debug.Log("Space pressed.");
+            rb.AddForce(Vector3.up * jumpSpeed, ForceMode.Impulse);
+        }
     }
 }
