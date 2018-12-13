@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System;
 
 public class PlayerController : MonoBehaviour {
 
@@ -11,21 +12,37 @@ public class PlayerController : MonoBehaviour {
 
     public GameObject cam;
     private CameraController camControl;
-
     public GameObject manager;
     private GameController gameManager;
-    public GameObject puller;
+    private GameObject puller;
     private Puller pull;
+
+    public GameObject explosionPrefab;
+    public AudioClip explosionSound, clinkSound, winSound, meowSound;
+    AudioSource explosionAudio, clinkAudio, winAudio, meowAudio;
+
     public GameObject[] itemList = new GameObject[3];
     int numItems = 0;
+    int hp = 50;
 
     void Start() {
         rb = GetComponent<Rigidbody>();
         camControl = cam.GetComponent<CameraController>();
         gameManager = manager.GetComponent<GameController>();
+        explosionAudio = GetComponent<AudioSource>();
+        clinkAudio = GetComponent<AudioSource>();
+        winAudio = GetComponent<AudioSource>();
+        meowAudio = GetComponent<AudioSource>();
     }
 
     void FixedUpdate() {
+        hp = gameManager.getHp();
+        if (hp <= 0) {
+            hp = 0;
+            explosionAudio.PlayOneShot(explosionSound);
+            Instantiate(explosionPrefab, transform.position, transform.rotation);
+            gameObject.SetActive(false);
+        }
         if (transform.position.y < -10) {
             gameManager.EndGame();
         }
@@ -65,6 +82,7 @@ public class PlayerController : MonoBehaviour {
         if (col.tag == "Key") {
             itemList[numItems++] = col.gameObject;
             col.gameObject.SetActive(false);
+            gameManager.updateItemsText(itemList, numItems);
         }
         if (col.tag == "Finish") {
             gameManager.levelComplete();

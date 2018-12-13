@@ -75,4 +75,18 @@ public class GameController : MonoBehaviour {
     void NextLevel() {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+
+    public void updateItemsText(GameObject[] itemsList, int itemCount) {
+        items.text = "Items: ";
+        for (int i = 0; i < itemCount; i++) {
+            if (i == 0)
+                items.text += itemsList[i].tag;
+            else
+                items.text += ", " + itemsList[i].tag;
+        }
+    }
+
+    public int getHp() {
+        return hpCount;
+    }
 }
