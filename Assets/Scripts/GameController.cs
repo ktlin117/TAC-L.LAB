@@ -5,17 +5,17 @@ using UnityEngine.UI;
 public class GameController : MonoBehaviour {
 
     bool gameHasEnded = false;
-    private float restartDelay = 1.5f;
+    private float restartDelay = 2.5f;
 //  public GameObject completeLevelUI;
-    private float nextLevelDelay = 3f;
+    private float nextLevelDelay = 3.5f;
     public static int numLives = 3;
     public int hpCount = 50;
-    public Text lives;
-    public Text gameState;
-    public Text items;
-    public Text hp;
+    public Text lives, gameState, items, hp;
+    public AudioClip gameMusic;
+    AudioSource audioSrc;
 
     void Start() {
+        audioSrc = GetComponent<AudioSource>();
         lives.text = "Lives: " + numLives;
         gameState.text = "";
         items.text = "Items: None";
@@ -23,6 +23,9 @@ public class GameController : MonoBehaviour {
     }
 
     void Update() {
+        if (hpCount == 0) {
+            EndGame();
+        }
         // Quit anytime using ESC or "Q"
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Q)) {
             Time.timeScale = 1;
@@ -50,17 +53,26 @@ public class GameController : MonoBehaviour {
 
     public void EndGame() {
         if (gameHasEnded == false) {
+            audioSrc.Stop();
             hpCount = 0;
             hp.text = "HP: " + hpCount;
             lives.text = "Lives: " + --numLives;
             gameHasEnded = true;
             Debug.Log("GAME OVER");
-            gameState.text = "You died!";
+            if (numLives >= 0) {
+                gameState.text = "You died!";
+            }
+            else {
+                numLives = 4;
+                gameState.text = "You lost all your lives! You will be given 5 additional lives.";
+                lives.text = "Lives: " + numLives;
+            }
             Invoke("Restart", restartDelay);
         }
     }
 
     public void levelComplete() {
+        audioSrc.Stop();
         gameHasEnded = true;
         lives.text = "Lives: " + ++numLives;
         Debug.Log("You win!");
@@ -89,4 +101,10 @@ public class GameController : MonoBehaviour {
     public int getHp() {
         return hpCount;
     }
+
+    public void updateHp(int hp) {
+        hpCount = hp;
+        this.hp.text = "HP: " + hpCount;
+    }
+
 }

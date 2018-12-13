@@ -17,9 +17,9 @@ public class PlayerController : MonoBehaviour {
     private GameObject puller;
     private Puller pull;
 
-    public GameObject explosionPrefab;
-    public AudioClip explosionSound, clinkSound, winSound, meowSound;
-    AudioSource explosionAudio, clinkAudio, winAudio, meowAudio;
+    public GameObject explosionPrefab, smallExplosionPrefab;
+    public AudioClip winSound;
+    AudioSource audioSrc;
 
     public GameObject[] itemList = new GameObject[3];
     int numItems = 0;
@@ -29,20 +29,12 @@ public class PlayerController : MonoBehaviour {
         rb = GetComponent<Rigidbody>();
         camControl = cam.GetComponent<CameraController>();
         gameManager = manager.GetComponent<GameController>();
-        explosionAudio = GetComponent<AudioSource>();
-        clinkAudio = GetComponent<AudioSource>();
-        winAudio = GetComponent<AudioSource>();
-        meowAudio = GetComponent<AudioSource>();
+        audioSrc = GetComponent<AudioSource>();
     }
 
     void FixedUpdate() {
         hp = gameManager.getHp();
-        if (hp <= 0) {
-            hp = 0;
-            explosionAudio.PlayOneShot(explosionSound);
-            Instantiate(explosionPrefab, transform.position, transform.rotation);
-            gameObject.SetActive(false);
-        }
+        checkIfDead();
         if (transform.position.y < -10) {
             gameManager.EndGame();
         }
@@ -85,7 +77,17 @@ public class PlayerController : MonoBehaviour {
             gameManager.updateItemsText(itemList, numItems);
         }
         if (col.tag == "Finish") {
+            audioSrc.PlayOneShot(winSound);
             gameManager.levelComplete();
+        }
+        if (col.tag == "Red Barrel") {
+            hp = hp - 20;
+            checkIfDead();
+            gameManager.updateHp(hp);
+            rb.velocity = (transform.position - col.transform.position) * 20;
+            Instantiate(smallExplosionPrefab, col.transform.position, col.transform.rotation);
+            
+            col.gameObject.SetActive(false);
         }
     }
 
@@ -98,5 +100,13 @@ public class PlayerController : MonoBehaviour {
             }
         }
         return false;
+    }
+
+    void checkIfDead() {
+        if (hp <= 0) {
+            hp = 0;
+            Instantiate(explosionPrefab, transform.position, transform.rotation);
+            gameObject.SetActive(false);
+        }
     }
 }

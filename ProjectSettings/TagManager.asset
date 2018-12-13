@@ -7,6 +7,10 @@ TagManager:
   - Ground
   - Puller
   - Key
+  - SF_Door
+  - CanDestroy
+  - Robot
+  - Red Barrel
   layers:
   - Default
   - TransparentFX
