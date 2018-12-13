@@ -66,6 +66,9 @@ public class PlayerController : MonoBehaviour {
             itemList[numItems++] = col.gameObject;
             col.gameObject.SetActive(false);
         }
+        if (col.tag == "Finish") {
+            gameManager.levelComplete();
+        }
     }
 
     public bool useKey() {
