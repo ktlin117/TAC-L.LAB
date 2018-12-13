@@ -14,6 +14,6 @@ public class Hookshot : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        transform.position = player.transform.position + new Vector3(0f, .6f, .05f);
+        transform.position = player.transform.position + new Vector3(0f, .5f, .05f);
 	}
 }
