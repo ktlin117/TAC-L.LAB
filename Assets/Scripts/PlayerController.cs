@@ -7,8 +7,9 @@ public class PlayerController : MonoBehaviour {
 
     public float speed;
     public float jumpSpeed;
+    private Vector3 fireballOriginalScale;
     private Rigidbody rb;
-    bool grounded;
+    bool grounded, onFire;
 
     public GameObject cam;
     private CameraController camControl;
@@ -17,22 +18,44 @@ public class PlayerController : MonoBehaviour {
     private GameObject puller;
     private Puller pull;
 
-    public GameObject explosionPrefab, smallExplosionPrefab;
-    public AudioClip winSound;
+    public GameObject explosionPrefab, smallExplosionPrefab, fireball;
+    public AudioClip winSound, flySound, dingSound, fireballSound;
     AudioSource audioSrc;
+    public int i = 0; 
+    int fireballDuration = 300;
 
     public GameObject[] itemList = new GameObject[3];
-    int numItems = 0;
-    int hp = 50;
+    int numItems = 0, maxhp = 100;
+    public int hp;
 
     void Start() {
+        fireballOriginalScale = fireball.transform.lossyScale;
         rb = GetComponent<Rigidbody>();
         camControl = cam.GetComponent<CameraController>();
         gameManager = manager.GetComponent<GameController>();
         audioSrc = GetComponent<AudioSource>();
+
+        hp = maxhp;
+        gameManager.updateHp(hp);
     }
 
     void FixedUpdate() {
+        if (onFire) {
+            if (i % 20 == 0) {
+                updateHp(hp - 1);
+            }
+            if (i == 0)
+                fireball.SetActive(true);
+            else if (i > fireballDuration) {
+                fireball.transform.localScale -= Vector3.one * Time.deltaTime * 5;
+                if (i > fireballDuration + 10) {
+                    fireball.SetActive(false);
+                    onFire = false;
+                    fireball.transform.localScale = fireballOriginalScale;
+                }
+            }
+            i++;
+        }
         hp = gameManager.getHp();
         checkIfDead();
         if (transform.position.y < -10) {
@@ -57,6 +80,7 @@ public class PlayerController : MonoBehaviour {
             if (puller != null) {
                 pull = puller.GetComponent<Puller>();
                 rb.velocity = (pull.transform.position - transform.position) * pull.pullForce;
+                audioSrc.PlayOneShot(flySound);
                 Debug.Log("Pull!");
             }
             else {
@@ -72,6 +96,7 @@ public class PlayerController : MonoBehaviour {
     private void OnTriggerEnter(Collider col) {
         Debug.Log("Trigger activated");
         if (col.tag == "Key") {
+            audioSrc.PlayOneShot(dingSound);
             itemList[numItems++] = col.gameObject;
             col.gameObject.SetActive(false);
             gameManager.updateItemsText(itemList, numItems);
@@ -81,17 +106,27 @@ public class PlayerController : MonoBehaviour {
             gameManager.levelComplete();
         }
         if (col.tag == "Red Barrel") {
-            hp = hp - 20;
-            checkIfDead();
-            gameManager.updateHp(hp);
+            updateHp(hp - 40);
             rb.velocity = (transform.position - col.transform.position) * 20;
             Instantiate(smallExplosionPrefab, col.transform.position, col.transform.rotation);
             
             col.gameObject.SetActive(false);
         }
+        if (col.tag == "Flames") {
+            audioSrc.PlayOneShot(fireballSound);
+        }
     }
 
-    public bool useKey() {
+    private void OnTriggerStay(Collider col) {
+        if (col.tag == "Flames") {
+            Debug.Log("Flames");
+            onFire = true;
+            i = 0;
+        }
+    }
+
+
+        public bool useKey() {
         if (numItems > 0) {
             for (int i = 0; i < numItems; i++) {
                 if (itemList[i].tag == "Key") {
@@ -108,5 +143,14 @@ public class PlayerController : MonoBehaviour {
             Instantiate(explosionPrefab, transform.position, transform.rotation);
             gameObject.SetActive(false);
         }
+    }
+
+    void updateHp(int hp) {
+        this.hp = hp;
+        if (hp < 0) {
+            hp = 0;
+            gameManager.EndGame();
+        }
+        gameManager.updateHp(hp);
     }
 }

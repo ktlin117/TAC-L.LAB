@@ -9,7 +9,7 @@ public class GameController : MonoBehaviour {
 //  public GameObject completeLevelUI;
     private float nextLevelDelay = 3.5f;
     public static int numLives = 3;
-    public int hpCount = 50;
+    public int hpCount;
     public Text lives, gameState, items, hp;
     public AudioClip gameMusic;
     AudioSource audioSrc;

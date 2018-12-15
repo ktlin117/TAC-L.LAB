@@ -11,6 +11,8 @@ TagManager:
   - CanDestroy
   - Robot
   - Red Barrel
+  - Flames
+  - Fireball
   layers:
   - Default
   - TransparentFX
