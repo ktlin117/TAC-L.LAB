@@ -13,61 +13,63 @@ public class GameController : MonoBehaviour {
     public Text lives, gameState, items, hp;
     public AudioClip gameMusic;
     AudioSource audioSrc;
+    private int finalBuildIndex = 2;
 
     void Start() {
+        Cursor.visible = false;
         audioSrc = GetComponent<AudioSource>();
         lives.text = "Lives: " + numLives;
         gameState.text = "";
         items.text = "Items: None";
         hp.text = "HP: " + hpCount;
+        Time.timeScale = 1;
+        audioSrc.pitch = 1;
     }
 
     void Update() {
         if (hpCount == 0) {
             EndGame();
         }
-        // Quit anytime using ESC or "Q"
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Q)) {
-            Time.timeScale = 1;
-            Debug.Log("QUIT button hit");     // for debugging in editor
-            Application.Quit();
+            returnToTitle();
         }
-        // Hit 'R' to restart level
         if (Input.GetKeyDown(KeyCode.R)) {
-            Time.timeScale = 1;
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
-        // Hit 'P' to pause/unpause game
         if (!gameHasEnded && Input.GetKeyDown(KeyCode.P)) {
-            Time.timeScale = (Time.timeScale > 0 ? 0 : 1); // toggle 1 <--> 0
+            Time.timeScale = (Time.timeScale > 0 ? 0 : 1);
         }
-        // Hit 'Z' to toggle slow-motion
-        if (!gameHasEnded && Input.GetKeyDown(KeyCode.Z)) {
-            Time.timeScale = (Time.timeScale == 0.5f ? 1 : 0.5f); // toggle 1 <--> 0.5 
+        if (Input.GetKeyDown(KeyCode.Z)) {
+            Time.timeScale = (Time.timeScale == 0.75f ? 1f : 0.75f);
+            audioSrc.pitch = (audioSrc.pitch == 0.75f ? 1f : 0.75f);
+        }
+        if (Input.GetKeyDown(KeyCode.X)) {
+            Time.timeScale = (Time.timeScale == 1.5f ? 1f : 1.5f);
+            audioSrc.pitch = (audioSrc.pitch == 1.5f ? 1f : 1.5f);
+        }
+        if (Input.GetKeyDown(KeyCode.E)) {
+            EndGame();                      // Super secret button: Goodbye cruel world
         }
     }
 
-/*    public void CompleteLevel() {
-        completeLevelUI.SetActive(true);
-    }*/
-
     public void EndGame() {
         if (gameHasEnded == false) {
+            Time.timeScale = 1;
+            audioSrc.pitch = 1;
             audioSrc.Stop();
             hpCount = 0;
             hp.text = "HP: " + hpCount;
             lives.text = "Lives: " + --numLives;
             gameHasEnded = true;
-            Debug.Log("GAME OVER");
             if (numLives >= 0) {
                 gameState.text = "You died!";
+                Invoke("Restart", restartDelay);
             }
             else {
-                numLives = 4;
-                gameState.text = "You lost all your lives! You will be given 5 additional lives.";
-                lives.text = "Lives: " + numLives;
+                lives.text = "Lives: " + ++numLives;
+                gameState.text = "You lost all your lives! Game Over!";
+                Invoke("returnToTitle", restartDelay);
             }
-            Invoke("Restart", restartDelay);
         }
     }
 
@@ -76,8 +78,14 @@ public class GameController : MonoBehaviour {
         gameHasEnded = true;
         lives.text = "Lives: " + ++numLives;
         Debug.Log("You win!");
-        gameState.text = "You completed the level!";
-        Invoke("NextLevel", nextLevelDelay);
+        if (SceneManager.GetActiveScene().buildIndex != finalBuildIndex) {
+            gameState.text = "You completed the level!";
+            Invoke("NextLevel", nextLevelDelay);
+        }
+        else {
+            gameState.text = "You beat the game! Congrats!";
+            Invoke("returnToTitle", nextLevelDelay);
+        }
     }
 
     void Restart() {
@@ -85,7 +93,7 @@ public class GameController : MonoBehaviour {
     }
 
     void NextLevel() {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
     public void updateItemsText(GameObject[] itemsList, int itemCount) {
@@ -107,4 +115,7 @@ public class GameController : MonoBehaviour {
         this.hp.text = "HP: " + hpCount;
     }
 
+    void returnToTitle() {
+        SceneManager.LoadScene(0);
+    }
 }

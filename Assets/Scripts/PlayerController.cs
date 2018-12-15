@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour {
     public float jumpSpeed;
     private Vector3 fireballOriginalScale;
     private Rigidbody rb;
-    bool grounded, onFire;
+    bool grounded, onFire, gameWon;
 
     public GameObject cam;
     private CameraController camControl;
@@ -19,24 +19,25 @@ public class PlayerController : MonoBehaviour {
     private Puller pull;
 
     public GameObject explosionPrefab, smallExplosionPrefab, fireball;
-    public AudioClip winSound, flySound, dingSound, fireballSound;
+    public AudioClip winSound, flySound, dingSound, fireballSound, fireSound, clinkSound;
     AudioSource audioSrc;
-    public int i = 0; 
-    int fireballDuration = 300;
+    int i = 0; 
 
-    public GameObject[] itemList = new GameObject[3];
+    GameObject[] itemList = new GameObject[3];
     int numItems = 0, maxhp = 100;
-    public int hp;
+    int hp, fireballDuration;
 
     void Start() {
+        fireballDuration = 0;
         fireballOriginalScale = fireball.transform.lossyScale;
         rb = GetComponent<Rigidbody>();
         camControl = cam.GetComponent<CameraController>();
         gameManager = manager.GetComponent<GameController>();
         audioSrc = GetComponent<AudioSource>();
-
         hp = maxhp;
         gameManager.updateHp(hp);
+        Time.timeScale = 1;
+        audioSrc.pitch = 1;
     }
 
     void FixedUpdate() {
@@ -47,11 +48,14 @@ public class PlayerController : MonoBehaviour {
             if (i == 0)
                 fireball.SetActive(true);
             else if (i > fireballDuration) {
+                audioSrc.volume -= .1f;
                 fireball.transform.localScale -= Vector3.one * Time.deltaTime * 5;
                 if (i > fireballDuration + 10) {
                     fireball.SetActive(false);
                     onFire = false;
                     fireball.transform.localScale = fireballOriginalScale;
+                    audioSrc.Stop();
+                    audioSrc.volume = 1.0f;
                 }
             }
             i++;
@@ -69,7 +73,7 @@ public class PlayerController : MonoBehaviour {
         Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical) * 2;
         Vector3 relativeMovement = Camera.main.transform.TransformVector(movement);
 
-        rb.AddForce(relativeMovement * speed);
+        rb.AddForce(new Vector3(relativeMovement.x, 0.0f, relativeMovement.z) * speed);
         if (rb.velocity.y < 0) {
             rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y - .42f, rb.velocity.z);
         }
@@ -87,6 +91,12 @@ public class PlayerController : MonoBehaviour {
                 Debug.Log("No pull.");
             }
         }
+        if (Input.GetKeyDown(KeyCode.Z)) {
+            audioSrc.pitch = (audioSrc.pitch == 0.75f ? 1f : 0.75f);
+        }
+        if (Input.GetKeyDown(KeyCode.X)) {
+            audioSrc.pitch = (audioSrc.pitch == 1.5f ? 1f : 1.5f);
+        }
     }
 
     public void setPuller(GameObject puller) {
@@ -95,13 +105,14 @@ public class PlayerController : MonoBehaviour {
 
     private void OnTriggerEnter(Collider col) {
         Debug.Log("Trigger activated");
-        if (col.tag == "Key") {
+        if (col.tag == "Key" || col.tag == "Cat") {
             audioSrc.PlayOneShot(dingSound);
             itemList[numItems++] = col.gameObject;
             col.gameObject.SetActive(false);
             gameManager.updateItemsText(itemList, numItems);
         }
         if (col.tag == "Finish") {
+            gameWon = true;
             audioSrc.PlayOneShot(winSound);
             gameManager.levelComplete();
         }
@@ -109,22 +120,27 @@ public class PlayerController : MonoBehaviour {
             updateHp(hp - 40);
             rb.velocity = (transform.position - col.transform.position) * 20;
             Instantiate(smallExplosionPrefab, col.transform.position, col.transform.rotation);
-            
             col.gameObject.SetActive(false);
-        }
-        if (col.tag == "Flames") {
-            audioSrc.PlayOneShot(fireballSound);
         }
     }
 
-    private void OnTriggerStay(Collider col) {
+    private void OnCollisionEnter(Collision collision) {
+        if (rb.velocity.x > 3 || rb.velocity.y > 3 || rb.velocity.z > 3)
+            audioSrc.PlayOneShot(clinkSound);
+    }
+
+    private void OnParticleCollision(GameObject col) {
+        Debug.Log("Particle collision");
         if (col.tag == "Flames") {
-            Debug.Log("Flames");
+            if (!audioSrc.isPlaying) {
+                audioSrc.PlayOneShot(fireballSound);
+                audioSrc.PlayOneShot(fireSound);
+            }
+            fireballDuration = 300;
             onFire = true;
             i = 0;
         }
     }
-
 
         public bool useKey() {
         if (numItems > 0) {

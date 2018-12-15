@@ -9,7 +9,7 @@ public class CameraController : MonoBehaviour
 
     public Transform lookAt;
     public Transform camTransform;
-    private float distance = 5.0f;
+    public float distance = 5.0f, maxDist = 15.0f, minDist = 1.0f;
 
     private float currentX = 0.0f;
     private float currentY = 45.0f;
@@ -33,6 +33,15 @@ public class CameraController : MonoBehaviour
             currentY -= Input.GetAxis("Mouse Y") * sensitivityY;
 
         currentY = Mathf.Clamp(currentY, Y_ANGLE_MIN, Y_ANGLE_MAX);
+
+        float d = Input.GetAxis("Mouse ScrollWheel") * 5;
+        float newDist = distance - d;
+        if (newDist >= minDist && newDist <= maxDist) {
+            distance = newDist;
+        }
+        else {
+            d = newDist = distance;
+        }
     }
 
     private void LateUpdate()
