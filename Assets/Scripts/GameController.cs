@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class GameController : MonoBehaviour {
 
@@ -10,7 +11,7 @@ public class GameController : MonoBehaviour {
     private float nextLevelDelay = 3.5f;
     public static int numLives = 3;
     public int hpCount;
-    public Text lives, gameState, items, hp;
+    public TextMeshProUGUI lives, gameState, items, hp;
     public AudioClip gameMusic;
     AudioSource audioSrc;
     private int finalBuildIndex = 2;

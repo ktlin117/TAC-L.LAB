@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour {
     public GameObject explosionPrefab, smallExplosionPrefab, fireball;
     public AudioClip winSound, flySound, dingSound, fireballSound, fireSound, clinkSound;
     AudioSource audioSrc;
+    public AudioSource audioSrc2;
     int i = 0; 
 
     GameObject[] itemList = new GameObject[3];
@@ -126,7 +127,7 @@ public class PlayerController : MonoBehaviour {
 
     private void OnCollisionEnter(Collision collision) {
         if (rb.velocity.x > 3 || rb.velocity.y > 3 || rb.velocity.z > 3)
-            audioSrc.PlayOneShot(clinkSound);
+            audioSrc2.PlayOneShot(clinkSound);
     }
 
     private void OnParticleCollision(GameObject col) {

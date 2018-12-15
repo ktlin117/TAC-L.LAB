@@ -5,13 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour {
 
-    public AudioClip mainMenuTheme;
-    AudioSource audioSrc;
-
     private void Start() {
         Cursor.visible = true;
-        audioSrc = GetComponent<AudioSource>();
-        audioSrc.PlayOneShot(mainMenuTheme);
     }
 
     public void playGame() {
