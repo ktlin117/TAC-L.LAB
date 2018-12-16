@@ -1,10 +1,12 @@
 using UnityEngine;
 using System.Collections;
+using TMPro;
 
 public class door : MonoBehaviour {
 
     GameObject thedoor;
-    public GameObject ball;
+    public GameObject ball, keyNeeded, currDoor;
+    public TextMeshProUGUI gameState;
     private PlayerController player;
 
     public bool unlocked;
@@ -14,17 +16,21 @@ public class door : MonoBehaviour {
     }
 
     void OnTriggerEnter (Collider col){
-        unlocked = player.useKey();
+        if (!unlocked) {
+            unlocked = player.useKey(keyNeeded.tag);
+        }
         if (unlocked) {
-             thedoor = GameObject.FindWithTag("SF_Door");
-             thedoor.GetComponent<Animation>().Play("open");
+            currDoor.GetComponent<Animation>().Play("open");
        }
+        else {
+            gameState.text = "Need " + keyNeeded.tag + " to open this door!";
+        }
     }
 
     void OnTriggerExit (Collider col) {
         if (unlocked) {
-             thedoor = GameObject.FindWithTag("SF_Door");
-             thedoor.GetComponent<Animation>().Play("close");
+            currDoor.GetComponent<Animation>().Play("close");
         }
-     }
+        gameState.text = "";
+    }
 }

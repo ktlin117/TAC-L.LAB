@@ -14,6 +14,11 @@ TagManager:
   - Flames
   - Fireball
   - Cat
+  - Launcher
+  - Silver Key
+  - Gold Key
+  - Detonator
+  - Lab
   layers:
   - Default
   - TransparentFX

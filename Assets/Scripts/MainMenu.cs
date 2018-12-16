@@ -5,8 +5,20 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour {
 
+    public GameController gameManager;
+    public AudioClip victorySound;
+    public AudioSource audioSrc;
+    int i = 0, lives = 3;
+
     private void Start() {
-        Cursor.visible = true;
+        gameManager.setLives(lives);
+    }
+
+    private void Update() {
+        i++;
+        if (i == 2) {
+            Cursor.visible = true;
+        }
     }
 
     public void playGame() {
@@ -15,5 +27,10 @@ public class MainMenu : MonoBehaviour {
 
     public void quitGame() {
         Application.Quit();
+    }
+
+    public void addALife() {
+        audioSrc.PlayOneShot(victorySound);
+        gameManager.setLives(++lives);
     }
 }

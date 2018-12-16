@@ -17,8 +17,10 @@ public class PlayerController : MonoBehaviour {
     private GameController gameManager;
     private GameObject puller;
     private Puller pull;
+    private GameObject launcher;
+    private LauncherScript launch;
 
-    public GameObject explosionPrefab, smallExplosionPrefab, fireball;
+    public GameObject explosionPrefab, smallExplosionPrefab, fireball, hugeExplosionPrefab;
     public AudioClip winSound, flySound, dingSound, fireballSound, fireSound, clinkSound;
     AudioSource audioSrc;
     public AudioSource audioSrc2;
@@ -27,6 +29,7 @@ public class PlayerController : MonoBehaviour {
     GameObject[] itemList = new GameObject[3];
     int numItems = 0, maxhp = 100;
     int hp, fireballDuration;
+    bool detonatorUsed;
 
     void Start() {
         fireballDuration = 0;
@@ -86,10 +89,17 @@ public class PlayerController : MonoBehaviour {
                 pull = puller.GetComponent<Puller>();
                 rb.velocity = (pull.transform.position - transform.position) * pull.pullForce;
                 audioSrc.PlayOneShot(flySound);
-                Debug.Log("Pull!");
             }
-            else {
-                Debug.Log("No pull.");
+            if (launcher != null) {
+                launch = launcher.GetComponent<LauncherScript>();
+                rb.velocity += Vector3.up * launch.force;
+                audioSrc.PlayOneShot(dingSound);
+            }
+            if (canUseDetonator()) {
+                GameObject lab = GameObject.FindGameObjectWithTag("Lab");
+                Instantiate(hugeExplosionPrefab, lab.transform.position, lab.transform.rotation);
+                lab.gameObject.SetActive(false);
+                detonatorUsed = true;
             }
         }
         if (Input.GetKeyDown(KeyCode.Z)) {
@@ -104,9 +114,12 @@ public class PlayerController : MonoBehaviour {
         this.puller = puller;
     }
 
+    public void setLauncher(GameObject launcher) {
+        this.launcher = launcher;
+    }
+
     private void OnTriggerEnter(Collider col) {
-        Debug.Log("Trigger activated");
-        if (col.tag == "Key" || col.tag == "Cat") {
+        if (col.tag == "Silver Key" || col.tag == "Gold Key" || col.tag == "Detonator") {
             audioSrc.PlayOneShot(dingSound);
             itemList[numItems++] = col.gameObject;
             col.gameObject.SetActive(false);
@@ -131,7 +144,6 @@ public class PlayerController : MonoBehaviour {
     }
 
     private void OnParticleCollision(GameObject col) {
-        Debug.Log("Particle collision");
         if (col.tag == "Flames") {
             if (!audioSrc.isPlaying) {
                 audioSrc.PlayOneShot(fireballSound);
@@ -143,11 +155,24 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-        public bool useKey() {
+        public bool useKey(String keyNeeded) {
         if (numItems > 0) {
             for (int i = 0; i < numItems; i++) {
-                if (itemList[i].tag == "Key") {
+                if (itemList[i].tag == keyNeeded) {
                     return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public bool canUseDetonator() {
+        if (!detonatorUsed) {
+            if (numItems > 0) {
+                for (int i = 0; i < numItems; i++) {
+                    if (itemList[i].tag == "Detonator") {
+                        return true;
+                    }
                 }
             }
         }

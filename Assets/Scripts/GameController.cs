@@ -7,14 +7,13 @@ public class GameController : MonoBehaviour {
 
     bool gameHasEnded = false;
     private float restartDelay = 2.5f;
-//  public GameObject completeLevelUI;
     private float nextLevelDelay = 3.5f;
     public static int numLives = 3;
     public int hpCount;
-    public TextMeshProUGUI lives, gameState, items, hp;
-    public AudioClip gameMusic;
+    public TextMeshProUGUI lives, gameState, items, hp, time;
     AudioSource audioSrc;
-    private int finalBuildIndex = 2;
+    private int finalBuildIndex = 3;
+    float currTime = 0;
 
     void Start() {
         Cursor.visible = false;
@@ -28,9 +27,16 @@ public class GameController : MonoBehaviour {
     }
 
     void Update() {
+        if (!gameHasEnded) {
+            updateTime();
+        }
         if (hpCount == 0) {
             EndGame();
         }
+        Inputs();
+    }
+
+    void Inputs() {
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Q)) {
             returnToTitle();
         }
@@ -78,7 +84,6 @@ public class GameController : MonoBehaviour {
         audioSrc.Stop();
         gameHasEnded = true;
         lives.text = "Lives: " + ++numLives;
-        Debug.Log("You win!");
         if (SceneManager.GetActiveScene().buildIndex != finalBuildIndex) {
             gameState.text = "You completed the level!";
             Invoke("NextLevel", nextLevelDelay);
@@ -119,4 +124,18 @@ public class GameController : MonoBehaviour {
     void returnToTitle() {
         SceneManager.LoadScene(0);
     }
+
+    public void setLives(int lives) {
+        numLives = lives;
+    }
+
+    void updateTime() {
+        currTime += Time.deltaTime;
+
+        string minutes = Mathf.Floor(currTime / 60).ToString("0");
+        string seconds = (currTime % 60).ToString("00");
+       
+        time.text = minutes + ":" + seconds;
+    }
+
 }
