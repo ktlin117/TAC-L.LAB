@@ -48261,6 +48261,17 @@ Prefab:
       propertyPath: audioSrc2
       value: 
       objectReference: {fileID: 1441190564}
+    - target: {fileID: 114009145372567816, guid: 6e9aada702c8ff6488bf4fac687a62ab,
+        type: 2}
+      propertyPath: distantExplosionSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a1918c520cddd6b4c86dab58151e25d1, type: 3}
+    - target: {fileID: 114009145372567816, guid: 6e9aada702c8ff6488bf4fac687a62ab,
+        type: 2}
+      propertyPath: hugeExplosionPrefab
+      value: 
+      objectReference: {fileID: 1956804529499284, guid: 9372d6ac76714a648bea91140cb80928,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6e9aada702c8ff6488bf4fac687a62ab, type: 2}
   m_IsPrefabAsset: 0

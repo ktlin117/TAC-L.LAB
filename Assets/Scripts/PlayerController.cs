@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour {
     private LauncherScript launch;
 
     public GameObject explosionPrefab, smallExplosionPrefab, fireball, hugeExplosionPrefab;
-    public AudioClip winSound, flySound, dingSound, fireballSound, fireSound, clinkSound;
+    public AudioClip winSound, flySound, dingSound, fireballSound, fireSound, clinkSound, distantExplosionSound;
     AudioSource audioSrc;
     public AudioSource audioSrc2;
     int i = 0; 
@@ -97,6 +97,7 @@ public class PlayerController : MonoBehaviour {
             }
             if (canUseDetonator()) {
                 GameObject lab = GameObject.FindGameObjectWithTag("Lab");
+                audioSrc.PlayOneShot(distantExplosionSound);
                 Instantiate(hugeExplosionPrefab, lab.transform.position, lab.transform.rotation);
                 lab.gameObject.SetActive(false);
                 detonatorUsed = true;

@@ -14,6 +14,7 @@ public class GameController : MonoBehaviour {
     AudioSource audioSrc;
     private int finalBuildIndex = 3;
     float currTime = 0;
+    public static float firstLevelTime = 0, secondLevelTime = 0, thirdLevelTime = 0;
 
     void Start() {
         Cursor.visible = false;
@@ -81,6 +82,7 @@ public class GameController : MonoBehaviour {
     }
 
     public void levelComplete() {
+        recordTime();
         audioSrc.Stop();
         gameHasEnded = true;
         lives.text = "Lives: " + ++numLives;
@@ -89,9 +91,30 @@ public class GameController : MonoBehaviour {
             Invoke("NextLevel", nextLevelDelay);
         }
         else {
-            gameState.text = "You beat the game! Congrats!";
-            Invoke("returnToTitle", nextLevelDelay);
+            float totalTime = firstLevelTime + secondLevelTime + thirdLevelTime;
+            string minutes = Mathf.Floor(totalTime / 60).ToString("0");
+            string seconds = (totalTime % 60).ToString("00");
+            gameState.text = "You beat the game! Congrats!\nTotal time: " + minutes + ":" + seconds;
+            Invoke("returnToTitle", nextLevelDelay + 3);
         }
+    }
+
+    void recordTime() {
+        if (SceneManager.GetActiveScene().buildIndex == 1) {
+            firstLevelTime = currTime;
+        }
+        else if (SceneManager.GetActiveScene().buildIndex == 2) {
+            secondLevelTime = currTime;
+        }
+        else if (SceneManager.GetActiveScene().buildIndex == 3) {
+            thirdLevelTime = currTime;
+        }
+    }
+
+    public void resetLevelTimes() {
+        firstLevelTime = 0;
+        secondLevelTime = 0;
+        thirdLevelTime = 0;
     }
 
     void Restart() {

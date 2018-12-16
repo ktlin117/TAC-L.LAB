@@ -15,13 +15,11 @@ public class Puller : MonoBehaviour {
 
     private void OnTriggerEnter(Collider col) {
         if (col.tag == "Player") {
-            Debug.Log("Player trigger entered");
             (gameObject.GetComponent("Halo") as Behaviour).enabled = true;
             player.setPuller(gameObject);
         }
     }
     private void OnTriggerExit(Collider col) {
-        Debug.Log("Trigger exit");
         (gameObject.GetComponent("Halo") as Behaviour).enabled = false;
         player.setPuller(null);
     }

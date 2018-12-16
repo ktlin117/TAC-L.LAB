@@ -12,6 +12,7 @@ public class MainMenu : MonoBehaviour {
 
     private void Start() {
         gameManager.setLives(lives);
+        gameManager.resetLevelTimes();
     }
 
     private void Update() {
