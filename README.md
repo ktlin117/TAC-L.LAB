@@ -3,6 +3,11 @@
 ## Game Description
 Follow the tragic story of a cat named Ball Cat, who was abandoned at a young age by lab scientists as a smol kitty. His sorrow calls for action, and you the player, will help Ball Cat enact his revenge. Traverse through levels full of treacherous terrain and difficult obstacles to reach the lab. You will roll around in a ball and interact with many different objects to achieve this goal. There are explosive barrels, flamethrowers, and endless falls to death, so be careful and keep rolling!
 
+## Playing the Game
+You will have to make sure you have Unity installed. Navigate to `TAC-L.LAB\Assets\Scenes\Title.unity`. This will open the Unity editor. From there you can play from the editor by pressing the play button in the top. You may also make modifications to game values and scripts from this window.
+
+For a fuller experience, go to `File -> Build Settings`. Make sure "PC, Mac, & Linux Standalone" is selected as the platform, then press build and run. Build the file to a folder, and from there, you may play the game at the best graphics settings and have an enhanced experience. Doing this will also create an executable, which can be used to easily and quickly open up the game.
+
 ## Controls
 * Arrow/WASD keys to move Ball Cat.
 * Move the mouse/cursor to move the third person camera.
