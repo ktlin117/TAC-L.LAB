@@ -6,7 +6,7 @@ Follow the tragic story of a cat named Ball Cat, who was abandoned at a young ag
 ## Playing the Game
 You will have to make sure you have Unity installed. Navigate to `TAC-L.LAB\Assets\Scenes\Title.unity`. This will open the Unity editor. From there you can play from the editor by pressing the play button in the top. You may also make modifications to game values and scripts from this window.
 
-For a fuller experience, go to `File -> Build Settings`. Make sure "PC, Mac, & Linux Standalone" is selected as the platform, then press build and run. Build the file to a folder, and from there, you may play the game at the best graphics settings and have an enhanced experience. Doing this will also create an executable, which can be used to easily and quickly open up the game.
+For a fuller experience, go to `File -> Build Settings`. Make sure "PC, Mac, & Linux Standalone" is selected as the platform, then press build and run. Build the file to a folder, and from there, you may play the game at optimal settings and have an enhanced experience. Doing this will also create an executable, which can be used to easily and quickly open up the game.
 
 ## Controls
 * Arrow/WASD keys to move Ball Cat.
